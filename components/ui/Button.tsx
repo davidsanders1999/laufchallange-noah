@@ -1,5 +1,7 @@
+"use client";
+
+import { forwardRef, ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
-import { ButtonHTMLAttributes, forwardRef } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "ghost" | "danger";
@@ -13,7 +15,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       className,
       variant = "primary",
       size = "md",
-      loading = false,
+      loading,
       disabled,
       children,
       ...props
@@ -25,30 +27,33 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || loading}
         className={cn(
-          "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97]",
+          "inline-flex items-center justify-center font-semibold transition-all duration-150",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+          "disabled:opacity-40 disabled:cursor-not-allowed active:scale-[0.98]",
+          "rounded-xl",
           {
-            "bg-green-500 text-white hover:bg-green-600 focus:ring-green-500 shadow-sm":
+            "bg-emerald-500 text-white hover:bg-emerald-600 focus-visible:ring-emerald-500 shadow-sm":
               variant === "primary",
-            "bg-white text-gray-700 border border-gray-200 hover:bg-gray-50 focus:ring-gray-300 shadow-sm":
+            "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 focus-visible:ring-slate-300 shadow-sm":
               variant === "secondary",
-            "text-gray-600 hover:bg-gray-100 focus:ring-gray-300":
+            "text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-300":
               variant === "ghost",
-            "bg-red-500 text-white hover:bg-red-600 focus:ring-red-500 shadow-sm":
+            "bg-red-500 text-white hover:bg-red-600 focus-visible:ring-red-500 shadow-sm":
               variant === "danger",
           },
           {
-            "px-3 py-1.5 text-sm": size === "sm",
-            "px-4 py-2.5 text-sm": size === "md",
-            "px-6 py-3 text-base": size === "lg",
+            "px-3 py-1.5 text-xs gap-1.5 h-8": size === "sm",
+            "px-4 py-2 text-sm gap-2 h-9": size === "md",
+            "px-5 py-3 text-sm gap-2 h-11": size === "lg",
           },
           className
         )}
         {...props}
       >
         {loading ? (
-          <span className="flex items-center gap-2">
+          <>
             <svg
-              className="animate-spin h-4 w-4"
+              className="animate-spin h-4 w-4 shrink-0"
               fill="none"
               viewBox="0 0 24 24"
             >
@@ -67,7 +72,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
               />
             </svg>
             {children}
-          </span>
+          </>
         ) : (
           children
         )}
@@ -77,5 +82,4 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 );
 
 Button.displayName = "Button";
-
 export default Button;

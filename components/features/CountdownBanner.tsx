@@ -2,47 +2,109 @@
 
 import { useEffect, useState } from "react";
 
-const TARGET_DATE = new Date("2025-05-31T23:59:59");
+const START_DATE = new Date("2026-04-01T00:00:00");
+const END_DATE = new Date("2026-05-24T23:59:59");
+const TOTAL_DAYS = Math.ceil(
+  (END_DATE.getTime() - START_DATE.getTime()) / (1000 * 60 * 60 * 24)
+);
 
-function getDaysLeft(): number {
+function getStats() {
   const now = new Date();
-  const diff = TARGET_DATE.getTime() - now.getTime();
-  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  const daysLeft = Math.max(
+    0,
+    Math.ceil((END_DATE.getTime() - now.getTime()) / (1000 * 60 * 60 * 24))
+  );
+  const elapsed = Math.min(
+    TOTAL_DAYS,
+    Math.max(
+      0,
+      Math.floor(
+        (now.getTime() - START_DATE.getTime()) / (1000 * 60 * 60 * 24)
+      )
+    )
+  );
+  const progress = Math.min(100, Math.round((elapsed / TOTAL_DAYS) * 100));
+  return { daysLeft, elapsed, progress };
 }
 
 export default function CountdownBanner() {
-  const [days, setDays] = useState<number | null>(null);
+  const [stats, setStats] = useState<ReturnType<typeof getStats> | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setDays(getDaysLeft());
+    setStats(getStats());
+    setTimeout(() => setMounted(true), 50);
   }, []);
 
-  if (days === null) return null;
+  if (!stats) return null;
 
-  if (days === 0) {
+  const { daysLeft, elapsed, progress } = stats;
+
+  if (daysLeft === 0) {
     return (
-      <div className="rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-400 px-5 py-4 text-center shadow-sm">
-        <p className="text-lg font-bold text-white">Challenge beendet!</p>
-        <p className="text-sm text-yellow-100">31. Mai ist erreicht</p>
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-card px-5 py-5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-1">
+          Challenge
+        </p>
+        <p className="text-xl font-bold text-slate-900">Abgeschlossen</p>
+        <div className="mt-4 w-full bg-slate-100 rounded-full h-1.5">
+          <div className="bg-emerald-500 h-1.5 rounded-full w-full" />
+        </div>
+        <div className="flex justify-between mt-2">
+          <span className="text-[10px] text-slate-400">1. Apr 2026</span>
+          <span className="text-[10px] font-semibold text-emerald-600">100%</span>
+          <span className="text-[10px] text-slate-400">24. Mai 2026</span>
+        </div>
       </div>
     );
   }
 
-  const urgency = days <= 7 ? "from-red-500 to-orange-500" : days <= 14 ? "from-orange-400 to-amber-400" : "from-green-500 to-emerald-500";
-
   return (
-    <div className={`rounded-2xl bg-gradient-to-r ${urgency} px-5 py-4 shadow-sm`}>
-      <div className="flex items-center justify-between">
+    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-card px-5 py-5">
+      {/* Header row */}
+      <div className="flex items-start justify-between mb-4">
         <div>
-          <p className="text-xs font-medium text-white/80 uppercase tracking-wide">Challenge läuft noch</p>
-          <p className="text-2xl font-bold text-white">
-            {days} {days === 1 ? "Tag" : "Tage"}
+          <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-0.5">
+            Verbleibend
+          </p>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-3xl font-bold text-slate-900 tabular-nums leading-none">
+              {daysLeft}
+            </span>
+            <span className="text-sm font-semibold text-slate-500">
+              {daysLeft === 1 ? "Tag" : "Tage"}
+            </span>
+          </div>
+        </div>
+
+        <div className="text-right">
+          <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-0.5">
+            Fortschritt
+          </p>
+          <div className="flex items-baseline gap-1 justify-end">
+            <span className="text-xl font-bold text-slate-900 tabular-nums leading-none">
+              {progress}
+            </span>
+            <span className="text-sm font-semibold text-slate-500">%</span>
+          </div>
+          <p className="text-[10px] text-slate-400 mt-0.5">
+            Tag {elapsed} / {TOTAL_DAYS}
           </p>
         </div>
-        <div className="text-right">
-          <p className="text-xs text-white/70">bis 31. Mai 2025</p>
-          <div className="text-2xl">🏁</div>
-        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+        <div
+          className="bg-emerald-500 h-1.5 rounded-full transition-all duration-1000 ease-out"
+          style={{ width: mounted ? `${progress}%` : "0%" }}
+        />
+      </div>
+
+      {/* Date labels */}
+      <div className="flex justify-between mt-2">
+        <span className="text-[10px] text-slate-400">1. Apr 2026</span>
+        <span className="text-[10px] text-slate-400">24. Mai 2026</span>
       </div>
     </div>
   );

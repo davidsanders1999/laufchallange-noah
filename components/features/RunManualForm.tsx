@@ -33,7 +33,8 @@ export default function RunManualForm({ userName }: RunManualFormProps) {
     const k = parseFloat(km);
     const d = parseFloat(duration);
     if (!km || isNaN(k) || k <= 0) e.km = "Bitte eine gültige Distanz eingeben";
-    if (!duration || isNaN(d) || d <= 0) e.duration = "Bitte eine gültige Dauer eingeben";
+    if (!duration || isNaN(d) || d <= 0)
+      e.duration = "Bitte eine gültige Dauer eingeben";
     if (!date) e.date = "Bitte ein Datum wählen";
     return e;
   };
@@ -68,35 +69,45 @@ export default function RunManualForm({ userName }: RunManualFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        label="Distanz (km)"
-        type="number"
-        step="0.01"
-        min="0.1"
-        max="200"
-        placeholder="z.B. 5.4"
-        value={km}
-        onChange={(e) => setKm(e.target.value)}
-        error={errors.km}
-      />
+      <div className="grid grid-cols-2 gap-3">
+        <Input
+          label="Distanz (km)"
+          type="number"
+          step="0.01"
+          min="0.1"
+          max="200"
+          placeholder="5.4"
+          value={km}
+          onChange={(e) => setKm(e.target.value)}
+          error={errors.km}
+        />
+        <Input
+          label="Dauer (min)"
+          type="number"
+          step="0.5"
+          min="1"
+          max="600"
+          placeholder="28.5"
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          error={errors.duration}
+        />
+      </div>
 
-      <Input
-        label="Dauer (Minuten)"
-        type="number"
-        step="0.5"
-        min="1"
-        max="600"
-        placeholder="z.B. 28.5"
-        value={duration}
-        onChange={(e) => setDuration(e.target.value)}
-        error={errors.duration}
-        hint="Dezimalminuten, z.B. 28.5 = 28 min 30 sek"
-      />
+      {errors.km && <p className="text-xs text-red-500 -mt-2">{errors.km}</p>}
+      {errors.duration && (
+        <p className="text-xs text-red-500 -mt-2">{errors.duration}</p>
+      )}
 
+      {/* Live pace preview */}
       {pace && (
-        <div className="rounded-xl bg-green-50 border border-green-100 px-4 py-3 flex items-center justify-between">
-          <span className="text-sm text-green-700 font-medium">Pace</span>
-          <span className="text-lg font-bold text-green-800">{pace} /km</span>
+        <div className="rounded-xl bg-slate-50 border border-slate-200 px-4 py-3 flex items-center justify-between">
+          <span className="text-xs font-bold uppercase tracking-[0.08em] text-slate-400">
+            Pace
+          </span>
+          <span className="text-base font-bold text-slate-800 tabular-nums">
+            {pace} /km
+          </span>
         </div>
       )}
 
@@ -116,8 +127,12 @@ export default function RunManualForm({ userName }: RunManualFormProps) {
         onChange={(e) => setNote(e.target.value)}
       />
 
+      <p className="text-xs text-slate-400">
+        Dauer in Dezimalminuten · 28.5 = 28 min 30 sek
+      </p>
+
       {saveError && (
-        <p className="text-sm text-red-500 bg-red-50 rounded-xl px-4 py-3">
+        <p className="text-sm text-red-500 bg-red-50 border border-red-100 rounded-xl px-4 py-3">
           {saveError}
         </p>
       )}

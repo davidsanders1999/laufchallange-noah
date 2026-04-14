@@ -1,5 +1,5 @@
+import { forwardRef, InputHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
-import { InputHTMLAttributes, forwardRef } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -12,11 +12,11 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, "-");
 
     return (
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1.5">
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-medium text-gray-700"
+            className="text-xs font-semibold text-slate-600 uppercase tracking-wide"
           >
             {label}
           </label>
@@ -25,21 +25,23 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           ref={ref}
           className={cn(
-            "w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 transition-colors",
-            "focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent",
+            "w-full rounded-xl border bg-white px-4 py-2.5 text-sm text-slate-900 transition-all duration-150",
+            "placeholder:text-slate-400",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-0",
             "disabled:opacity-50 disabled:cursor-not-allowed",
-            error && "border-red-400 focus:ring-red-400",
+            error
+              ? "border-red-300 focus-visible:ring-red-400 bg-red-50/30"
+              : "border-slate-200 focus-visible:ring-emerald-400 hover:border-slate-300",
             className
           )}
           {...props}
         />
-        {error && <p className="text-xs text-red-500">{error}</p>}
-        {hint && !error && <p className="text-xs text-gray-400">{hint}</p>}
+        {error && <p className="text-xs text-red-500 font-medium">{error}</p>}
+        {hint && !error && <p className="text-xs text-slate-400">{hint}</p>}
       </div>
     );
   }
 );
 
 Input.displayName = "Input";
-
 export default Input;

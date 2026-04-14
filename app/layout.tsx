@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Lauf-Challenge",
-  description: "David vs. Noah — Running Challenge bis 31. Mai",
+  description: "David vs. Noah — Running Challenge bis 24. Mai 2026",
   manifest: "/manifest.json",
 };
 

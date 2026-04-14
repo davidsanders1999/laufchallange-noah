@@ -1,4 +1,6 @@
-import { Card } from "@/components/ui/Card";
+"use client";
+
+import { useEffect, useState } from "react";
 import { LeaderboardEntry } from "@/types";
 import { calcPace } from "@/lib/utils";
 
@@ -6,75 +8,117 @@ interface RankingCardProps {
   leaderboard: LeaderboardEntry[];
 }
 
-const MEDALS = ["🥇", "🥈"] as const;
-const COLORS = ["text-yellow-500", "text-gray-400"] as const;
+const RUNNER_COLORS: Record<string, { bar: string; text: string; bg: string; border: string }> = {
+  David: {
+    bar: "bg-emerald-500",
+    text: "text-emerald-600",
+    bg: "bg-emerald-50",
+    border: "border-emerald-200",
+  },
+  Noah: {
+    bar: "bg-violet-500",
+    text: "text-violet-600",
+    bg: "bg-violet-50",
+    border: "border-violet-200",
+  },
+};
+
+const DEFAULT_COLOR = {
+  bar: "bg-slate-400",
+  text: "text-slate-600",
+  bg: "bg-slate-50",
+  border: "border-slate-200",
+};
 
 export default function RankingCard({ leaderboard }: RankingCardProps) {
-  const entries = [
-    leaderboard[0] ?? null,
-    leaderboard[1] ?? null,
-  ];
+  const [mounted, setMounted] = useState(false);
 
-  const leader = entries[0];
-  const kmDiff =
-    leader && entries[1]
-      ? leader.totalKm - entries[1].totalKm
-      : null;
+  useEffect(() => {
+    setTimeout(() => setMounted(true), 100);
+  }, []);
+
+  const maxKm = leaderboard[0]?.totalKm ?? 0;
+
+  if (leaderboard.length === 0) {
+    return (
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-4">
+          Rangliste
+        </p>
+        <p className="text-sm text-slate-400 text-center py-4">
+          Noch keine Läufe eingetragen
+        </p>
+      </div>
+    );
+  }
+
+  const leader = leaderboard[0];
+  const second = leaderboard[1] ?? null;
+  const kmDiff = second ? leader.totalKm - second.totalKm : null;
 
   return (
-    <Card>
-      <h2 className="text-base font-semibold text-gray-900 mb-4">Rangliste</h2>
+    <div className="bg-white rounded-2xl border border-slate-200/80 shadow-card p-5">
+      <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-4">
+        Rangliste
+      </p>
 
-      <div className="space-y-3">
-        {entries.map((entry, i) => {
-          if (!entry) {
-            return (
-              <div key={i} className="flex items-center gap-3 py-2">
-                <span className="text-xl">{MEDALS[i]}</span>
-                <span className="text-sm text-gray-400 italic">Noch kein Läufer</span>
-              </div>
-            );
-          }
-
+      <div className="space-y-4">
+        {leaderboard.slice(0, 2).map((entry, i) => {
+          const widthPct = maxKm > 0 ? (entry.totalKm / maxKm) * 100 : 0;
+          const c = RUNNER_COLORS[entry.userName] ?? DEFAULT_COLOR;
           const pace = calcPace(entry.totalKm, entry.totalMin);
 
           return (
-            <div
-              key={entry.userName}
-              className={`flex items-center gap-3 rounded-xl p-3 ${i === 0 ? "bg-yellow-50 border border-yellow-100" : "bg-gray-50"}`}
-            >
-              <span className="text-2xl">{MEDALS[i]}</span>
-              <div className="flex-1 min-w-0">
+            <div key={entry.userName}>
+              {/* Name row */}
+              <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-gray-900">
+                  <span className="text-xs font-bold text-slate-300 w-4">
+                    {i + 1}
+                  </span>
+                  <span className="text-sm font-bold text-slate-900">
                     {entry.userName}
                   </span>
-                  {i === 0 && kmDiff !== null && kmDiff > 0 && (
-                    <span className="text-xs text-green-600 font-medium bg-green-100 px-1.5 py-0.5 rounded-full">
-                      +{kmDiff.toFixed(1)} km
-                    </span>
-                  )}
+                  <span className="text-[10px] text-slate-400">
+                    {entry.runCount} {entry.runCount === 1 ? "Lauf" : "Läufe"}
+                  </span>
                 </div>
-                <p className="text-xs text-gray-500">
-                  {entry.runCount} {entry.runCount === 1 ? "Lauf" : "Läufe"} · Ø {pace} /km
-                </p>
+                <div className="text-right">
+                  <span className={`text-base font-bold tabular-nums ${c.text}`}>
+                    {entry.totalKm.toFixed(1)}
+                  </span>
+                  <span className="text-xs text-slate-400 ml-0.5">km</span>
+                </div>
               </div>
-              <div className="text-right">
-                <p className={`text-xl font-bold ${COLORS[i]}`}>
-                  {entry.totalKm.toFixed(1)}
-                </p>
-                <p className="text-xs text-gray-400">km</p>
+
+              {/* Bar */}
+              <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                <div
+                  className={`${c.bar} h-2 rounded-full transition-all duration-700 ease-out`}
+                  style={{ width: mounted ? `${widthPct}%` : "0%" }}
+                />
               </div>
+
+              {/* Pace */}
+              <p className="text-[10px] text-slate-400 mt-1">
+                Ø {pace} /km
+              </p>
             </div>
           );
         })}
       </div>
 
-      {leaderboard.length === 0 && (
-        <p className="text-center text-sm text-gray-400 py-4">
-          Noch keine Läufe eingetragen
-        </p>
+      {/* Lead indicator */}
+      {kmDiff !== null && kmDiff > 0 && (
+        <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between">
+          <span className="text-xs text-slate-500">
+            <span className="font-semibold text-slate-700">{leader.userName}</span> führt
+          </span>
+          <span className="text-xs font-bold text-slate-700 tabular-nums">
+            +{kmDiff.toFixed(1)} km
+          </span>
+        </div>
       )}
-    </Card>
+    </div>
   );
 }

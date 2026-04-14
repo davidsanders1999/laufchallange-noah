@@ -1,15 +1,20 @@
-import { cn } from "@/lib/utils";
 import { HTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   padding?: "none" | "sm" | "md" | "lg";
 }
 
-export function Card({ className, padding = "md", children, ...props }: CardProps) {
+export function Card({
+  className,
+  padding = "md",
+  children,
+  ...props
+}: CardProps) {
   return (
     <div
       className={cn(
-        "bg-white rounded-2xl shadow-sm border border-gray-100",
+        "bg-white rounded-2xl border border-slate-200/80 shadow-card",
         {
           "": padding === "none",
           "p-4": padding === "sm",
@@ -31,7 +36,7 @@ export function CardHeader({
   ...props
 }: HTMLAttributes<HTMLDivElement>) {
   return (
-    <div className={cn("mb-3", className)} {...props}>
+    <div className={cn("mb-4", className)} {...props}>
       {children}
     </div>
   );
@@ -44,7 +49,7 @@ export function CardTitle({
 }: HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h2
-      className={cn("text-base font-semibold text-gray-900", className)}
+      className={cn("text-sm font-bold text-slate-900 tracking-tight", className)}
       {...props}
     >
       {children}
