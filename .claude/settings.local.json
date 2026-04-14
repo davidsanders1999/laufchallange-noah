@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npx prisma:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run:*)",
+      "Bash(claude mcp:*)",
+      "mcp__neon__list_projects",
+      "mcp__neon__get_connection_string",
+      "mcp__neon__run_sql",
+      "mcp__neon__run_sql_transaction"
+    ]
+  }
+}
