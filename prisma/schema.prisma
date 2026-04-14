@@ -25,3 +25,26 @@ model Run {
   note        String?
   createdAt   DateTime @default(now())
 }
+
+enum FeedbackCategory {
+  BUG
+  IMPROVEMENT
+  OTHER
+}
+
+enum FeedbackStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
+  REJECTED
+}
+
+model Feedback {
+  id         String           @id @default(cuid())
+  title      String
+  body       String?
+  category   FeedbackCategory @default(IMPROVEMENT)
+  status     FeedbackStatus   @default(OPEN)
+  authorName String?
+  createdAt  DateTime         @default(now())
+}
