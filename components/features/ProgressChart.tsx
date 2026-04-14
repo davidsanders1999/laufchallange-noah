@@ -47,9 +47,15 @@ function buildSeries(runs: RunEntry[], name: string, xMin: number, xMax: number)
 }
 
 function makeLine(pts: { t: number; km: number }[], xs: (t: number) => number, ys: (km: number) => number) {
-  return pts
-    .map((p, i) => `${i === 0 ? "M" : "L"}${xs(p.t).toFixed(1)},${ys(p.km).toFixed(1)}`)
-    .join(" ");
+  if (pts.length === 0) return "";
+  let d = `M${xs(pts[0].t).toFixed(1)},${ys(pts[0].km).toFixed(1)}`;
+  for (let i = 1; i < pts.length; i++) {
+    const prevY = ys(pts[i - 1].km).toFixed(1);
+    const curX  = xs(pts[i].t).toFixed(1);
+    const curY  = ys(pts[i].km).toFixed(1);
+    d += ` L${curX},${prevY} L${curX},${curY}`;
+  }
+  return d;
 }
 
 function makeArea(pts: { t: number; km: number }[], xs: (t: number) => number, ys: (km: number) => number) {

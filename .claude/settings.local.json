@@ -11,7 +11,9 @@
       "mcp__neon__run_sql",
       "mcp__neon__run_sql_transaction",
       "WebSearch",
-      "Bash(npx dotenv:*)"
+      "Bash(npx dotenv:*)",
+      "Bash(grep \"REJECTED\" /Users/davidsanders/Documents/GitHub/laufchallange-noah/node_modules/@prisma/client/.prisma/client/*.d.ts)",
+      "Bash(ln -s ../../.prisma /Users/davidsanders/Documents/GitHub/laufchallange-noah/node_modules/@prisma/client/.prisma)"
     ]
   }
 }
