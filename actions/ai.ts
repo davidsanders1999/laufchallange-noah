@@ -7,7 +7,7 @@ const openai = new OpenAI({
 });
 
 type AnalyzeResult =
-  | { km: number; durationMin: number }
+  | { km: number; durationMin: number; date?: string }
   | { error: string };
 
 export async function analyzeStravaImage(
@@ -26,10 +26,11 @@ export async function analyzeStravaImage(
 Gib NUR ein JSON-Objekt zurück, keine Erklärungen:
 {
   "km": <Distanz in Kilometern als Dezimalzahl>,
-  "durationMin": <Gesamtdauer in Minuten als Dezimalzahl>
+  "durationMin": <Gesamtdauer in Minuten als Dezimalzahl>,
+  "date": <Datum des Laufs im Format YYYY-MM-DD, oder null wenn nicht erkennbar>
 }
 
-Wenn du die Daten nicht erkennen kannst, gib zurück:
+Wenn du die Laufdaten (km, durationMin) nicht erkennen kannst, gib zurück:
 { "error": "Daten nicht erkennbar" }`,
             },
             {
@@ -60,7 +61,12 @@ Wenn du die Daten nicht erkennen kannst, gib zurück:
       return { error: "Ungültige Daten aus dem Screenshot extrahiert." };
     }
 
-    return { km, durationMin };
+    const date =
+      typeof parsed.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(parsed.date)
+        ? parsed.date
+        : undefined;
+
+    return { km, durationMin, date };
   } catch (err) {
     console.error("analyzeStravaImage error:", err);
     return { error: "Fehler bei der Bildanalyse. Bitte manuell eingeben." };

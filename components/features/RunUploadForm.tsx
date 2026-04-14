@@ -18,6 +18,7 @@ export default function RunUploadForm({ userName }: RunUploadFormProps) {
   const [extracted, setExtracted] = useState<{
     km: number;
     durationMin: number;
+    date?: string;
   } | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -60,6 +61,7 @@ export default function RunUploadForm({ userName }: RunUploadFormProps) {
       userName,
       km: extracted.km,
       durationMin: extracted.durationMin,
+      date: extracted.date ? new Date(extracted.date) : undefined,
     });
 
     if (result.success) {
@@ -162,7 +164,7 @@ export default function RunUploadForm({ userName }: RunUploadFormProps) {
             </p>
           </div>
 
-          <div className="grid grid-cols-3 divide-x divide-slate-100 px-0">
+          <div className={`grid divide-x divide-slate-100 ${extracted.date ? "grid-cols-4" : "grid-cols-3"}`}>
             <ExtractedStat
               label="Distanz"
               value={extracted.km.toFixed(2)}
@@ -182,6 +184,16 @@ export default function RunUploadForm({ userName }: RunUploadFormProps) {
               value={calcPace(extracted.km, extracted.durationMin)}
               unit="/km"
             />
+            {extracted.date && (
+              <ExtractedStat
+                label="Datum"
+                value={new Date(extracted.date).toLocaleDateString("de-DE", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric",
+                })}
+              />
+            )}
           </div>
 
           {saveError && (
